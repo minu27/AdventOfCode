@@ -1,126 +1,73 @@
-const fs = require('fs')
-let inputData = fs.readFileSync("Day4input.txt", 'utf8').split("\n");
-//Create array of numbers drawn
-let numbersDrawn = inputData[0].split(",");
-console.log('Number of Rounds = '+numbersDrawn.length);
-let boards = inputData.slice(2);
-//Create array of boards
-let boardArray = []; 
-let removeCount = 0;
-for(let i = 0;i<boards.length;i++) {
-    let board = [];
-    if(boards[i] != '') {
-        for(let j = 0;j<5;j++) {
-            boards[i].replace("\\s+", " ").trim();
-            let row = boards[i].split(" ");
-            const result =  row.filter(e =>  e);
-            board.push(result);
-            i++;
-        }
-        boardArray.push(board);
+const fs = require('fs');
+
+function readFromFile(filename)
+{
+    const fileData = fs.readFileSync(filename, 'utf8');
+    let lines = fileData.split(/\n/);
+    const nums = lines[0].split(',');
+    let bblocks = [];
+    let numBlocks = (lines.length - 1)/6;
+    for (let blockNo=0; blockNo < numBlocks; ++blockNo){
+        bblocks.push(checkBlock(lines, (blockNo*6 + 2)));
     }
+    let solution = solve(nums, bblocks);
+    return solution;
 }
 
-function startGame(array, drawn) {
-    for(let a = 0; a < drawn.length; a++) {
-        for(let b = 0; b < array.length; b++) {
-            for(let c = 0; c < 5; c++) {
-                if(array[b][c].includes(drawn[a])) {
-                    let bingoIndex = array[b][c].indexOf(drawn[a]);
-                    array[b][c][bingoIndex] = "-";
-                }
-            }
-        }
-        //Remove winning boards
-        if(removeCount < 100 && array) {
-            //Check rows
-            for(let b = 0; b < array.length; b++) {
-                for(let c = 0; c < 5; c++) {
-
-                    let checkBingo = array[b][c].every( (val, i, arr) => val === arr[0]);
-                    if(checkBingo) {
-                        //let rWinnerBoard = b;
-                        let removedArray =  array.splice(b, 1); 
-                        removeCount++;
-                        console.log('Number Drawn is '+drawn[a]);
-                        console.log('Board '+b)
-                        console.log('Removed Rows is '+removedArray);
-                        console.log('Boards removed Count = '+removeCount)
-                        console.log('ROUND #'+a);
-                        break;
-                        // let rluckyNumber = drawn[a];
-                        // let rpack = [];
-                        // rpack.push(rluckyNumber);
-                        // rpack.push(rWinnerBoard);
-                        // return rpack;
-                    }  
-                }
-            }
-            //Check columns
-            for(let b = 0; b < array.length; b++) {
-                for(let char = 0; char < 5 ; char++) {
-                    let column = [];
-                    for(let c = 0; c < 5; c++) {
-                        column.push(array[b][c][char]);
-                    }
-
-                    if(column.every( (val, i, arr) => val === arr[0] )) {
-                        // let cWinnerBoard = b; 
-                        let removedArray =  array.splice(b, 1); 
-                        removeCount++;
-                        console.log('Number Drawn is '+drawn[a]);
-                        console.log('Board '+b)
-                        console.log('Removed Columns is '+removedArray);
-                        console.log('Boards removed Count = '+removeCount)
-                        console.log('ROUND #'+a);
-                        break;
-                        // let cluckyNumber = drawn[a];
-                        // let cpack = [];
-                        // cpack.push(cluckyNumber);
-                        // cpack.push(cWinnerBoard);
-                        // return cpack;
-                    }
-                }
-            }
-        }
-        if(removeCount == 99){
-            array.push(drawn[a]);
-            return array;
-        }
-        
+function checkBlock(lines, startLine)
+{
+    let block = {rows: [], cols: [], solved: false}
+    for (let rowNo=0; rowNo<5; ++rowNo){
+        block.rows.push(lines[startLine+rowNo].trim().split(/\s+/));
     }
-    
+    // Also figure out columns now to make it easier later.
+    for (let colNo=0; colNo<5; ++colNo){
+        let col = [];
+        for (let rowNo=0; rowNo<5; ++rowNo){
+            col.push(block.rows[rowNo][colNo]);
+        }
+        block.cols.push(col);
+        //console.log('Block Cols = '+block.cols);
+    }
+    //console.log('Blocks = '+JSON.stringify(block, null, 2));
+    return block;
 }
 
-//Starts the Game
-let pack = startGame(boardArray, numbersDrawn);
-console.log('Size of returned array '+pack.length)
-let number = pack[1];
-let WinBoard = pack[0];
-console.log('----------------------------------');
-console.log("Number drawn is "+number)
-console.log('Last Winning Board is '+WinBoard)
-let WinnerBoard = []
-for(let d = 0; d<5; d++){
-    WinnerBoard.push(WinBoard[d]);
-    console.log(WinBoard[d])
+function markBlock(number, block)
+{
+    // Remove number from rows and cols.
+    block.rows = block.rows.map(row => row.reduce((prev, cellVal) => {return cellVal === number ? prev : [...prev, cellVal]}, []));
+    block.cols = block.cols.map(row => row.reduce((prev, cellVal) => {return cellVal === number ? prev : [...prev, cellVal]}, []));
+
+    // Check if complete (i.e. if any of the rows or cols are empty)
+    block.solved = block.solved ||  block.rows.reduce((prev, val) => prev || val.length === 0, false);
+    block.solved = block.solved ||  block.cols.reduce((prev, val) => prev || val.length === 0, false);
 }
 
-//Calculates final score
-function calcScore(board, num){
+function calcSum(block)
+{
     let sum = 0;
-    for(let i = 0;i<5;i++){
-        board[i].map(b => {
-            if(b != '-'){
-                let n = Number(b);
-                sum = sum + n;
+    block.rows.forEach(row => {
+        sum = row.reduce((prev, val) => prev + Number(val), sum)
+    })
+    return sum;
+}
+
+function solve(numbers, blocks)
+{
+    let winners = []
+    numbers.forEach(number => {
+        blocks.forEach(block => {
+            if (!block.solved){
+                markBlock(number, block);
+                if (block.solved){
+                    winners.push(Number(number) * calcSum(block));
+                }
             }
         })
-    }
-    console.log('Sum of remaining board numbers = '+sum)
-    let res = sum * num;
-    return res;
+    });
+    return winners;
 }
 
-let score = calcScore(WinnerBoard, number)
-console.log('Final Score = '+score); 
+let answer = readFromFile('./Day4input.txt');
+console.log("Answer = " + answer[answer.length -1]); //23042
