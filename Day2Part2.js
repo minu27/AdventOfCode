@@ -1,6 +1,6 @@
 const fs = require('fs')
-let inputData = fs.readFileSync("Day2input.txt", 'utf8').split("\n");
-//let inputData =['forward 5', 'down 5', 'forward 8', 'up 3', 'down 8', 'forward 2'];
+let inputData = fs.readFileSync("./inputs/Day2input.txt", 'utf8').split("\n");
+
 let horizontal_position = 0;
 let final_depth = 0;
 let depth = 0;
@@ -23,6 +23,4 @@ inputData.map(data => {
     } 
 })
 
-console.log('Final depth '+final_depth);
-console.log('Final horizontal Position = '+horizontal_position);
-console.log('Multiplication = '+horizontal_position * final_depth);
+console.log('Multiplication = '+horizontal_position * final_depth); //1997106066

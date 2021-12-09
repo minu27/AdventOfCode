@@ -1,6 +1,6 @@
 const fs = require('fs')
-let inputData = fs.readFileSync("Day3input.txt", 'utf8').split("\n");
-//let inputData = ['00100','11110','10110','10111','10101','01111','00111','11100','10000','11001','00010','01010'];
+let inputData = fs.readFileSync("./inputs/Day3input.txt", 'utf8').split("\n");
+
 let gamma_rate = '';
 let epsilon_rate = '';
 
@@ -15,7 +15,7 @@ for(let i=0;i<12;i++) {
             count_0++;
         }
     });
-    console.log('Count of 1 = '+count_1+' and count of 0 = '+count_0);
+
     //Set the gamma_rate and epsilon_rate values
     if(count_1 > count_0) {
         gamma_rate = gamma_rate + '1';
@@ -29,4 +29,4 @@ for(let i=0;i<12;i++) {
 let gamma_decimal = parseInt(gamma_rate, 2);
 let epsilon_decimal = parseInt(epsilon_rate, 2);
 let power_consumption = gamma_decimal * epsilon_decimal;
-console.log('power_consumption = '+power_consumption);
+console.log('power_consumption = '+power_consumption); //3009600

@@ -1,7 +1,6 @@
 const fs = require('fs')
-let Data1 = fs.readFileSync("Day3input.txt", 'utf8').split("\n");
-let Data2 = fs.readFileSync("Day3input.txt", 'utf8').split("\n");
-//let inputData = ['00100','11110','10110','10111','10101','01111','00111','11100','10000','11001','00010','01010'];
+let Data1 = fs.readFileSync("./inputs/Day3input.txt", 'utf8').split("\n");
+let Data2 = fs.readFileSync("./inputs/Day3input.txt", 'utf8').split("\n");
 
 function findOGRValue(inputData) {
     let bit = '';
@@ -22,7 +21,6 @@ function findOGRValue(inputData) {
                     }
                 }
             });
-            console.log('Count of 1 = '+count_1+' and count of 0 = '+count_0);
             
             if(count_1 > count_0 || count_0 == count_1) {
                 bit = '1';
@@ -43,13 +41,8 @@ function findOGRValue(inputData) {
 
     }
     OGR_value = inputData.filter(Boolean);
-    //console.log('OGR_value = '+OGR_value);
     return parseInt(OGR_value, 2);
 }
-
-//---------------------
-
-//let inputData2 = ['00100','11110','10110','10111','10101','01111','00111','11100','10000','11001','00010','01010'];
 
 function findCSRValue(inputData2) {
     let bit2 = '';
@@ -70,7 +63,6 @@ function findCSRValue(inputData2) {
                     }
                 }
             });
-            console.log('Count of 1 = '+count_1+' and count of 0 = '+count_0);
             
             if(count_0 < count_1 || count_0 == count_1) {
                 bit2 = '0';
@@ -90,10 +82,7 @@ function findCSRValue(inputData2) {
         }    
 
     }
-    for(let x = 0;x<inputData2.length;x++){
-        if(inputData2[x] !== '')
-            console.log(inputData2[x]);
-    }
+    
     CSR_value = inputData2.filter(Boolean);
     return parseInt(CSR_value, 2);
     

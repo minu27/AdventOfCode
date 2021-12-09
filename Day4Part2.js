@@ -69,5 +69,5 @@ function solve(numbers, blocks)
     return winners;
 }
 
-let answer = readFromFile('./Day4input.txt');
+let answer = readFromFile('./inputs/Day4input.txt');
 console.log("Answer = " + answer[answer.length -1]); //23042

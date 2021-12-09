@@ -1,5 +1,5 @@
 const fs = require('fs')
-let inputData = fs.readFileSync("Day4input.txt", 'utf8').split("\n");
+let inputData = fs.readFileSync("./inputs/Day4input.txt", 'utf8').split("\n");
 //Create array of numbers drawn
 let numbersDrawn = inputData[0].split(",");
 let boards = inputData.slice(2);
@@ -67,13 +67,9 @@ function startGame(array, drawn) {
 let pack = startGame(boardArray, numbersDrawn);
 let number = pack[0];
 let WinBoard = pack[1];
-console.log('----------------------------------');
-console.log("Number drawn is "+number)
-console.log('Winning Board is '+WinBoard)
 let WinnerBoard = []
 for(let d = 0; d<5; d++){
     WinnerBoard.push(boardArray[WinBoard][d]);
-    console.log(boardArray[WinBoard][d])
 }
 
 //Calculates final score
@@ -87,7 +83,6 @@ function calcScore(board, num){
             }
         })
     }
-    console.log('Sum of remaining board numbers = '+sum)
     let res = sum * num;
     return res;
 }
